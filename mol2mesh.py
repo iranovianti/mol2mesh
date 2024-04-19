@@ -8,6 +8,7 @@ Written by Ira Novianti
 import itertools
 import numpy as np
 import webcolors
+import plotly.graph_objects as go
 
 from file_parser import *
 from style import *
