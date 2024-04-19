@@ -8,6 +8,7 @@ Written by Ira Novianti
 import numpy as np
 from scipy.spatial import Delaunay
 from scipy.linalg import norm
+import math
 
 def sphere_tri(R=1., res=10, origin=[0, 0, 0]):
 	phi = np.linspace(0, 2*np.pi, res)
