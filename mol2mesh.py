@@ -125,6 +125,8 @@ class Mol2Mesh:
 		"""
 		vertices, faces = self.get_mesh()
 
+		triangles = vertices[faces]
+
 		fig = go.Figure()
 
 		if show_edges:
