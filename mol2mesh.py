@@ -60,18 +60,20 @@ class Mol2Mesh:
 			element = atom['element'] if atom['element'] in self.style.atom_radius else 'others'
 			R = self.style.atom_radius[element]
 			verts, fcs = sphere_tri(R=R, res=res_a, origin=atom['coor'])
+			color = self.style.atom_color[element]
 
 			element = atom['element'] if atom['element'] in self.style.atom_color else 'others'
 			atom.update({'vertices': verts,
 						 'faces': fcs,
-						 'color': self.style.atom_color[element]})
+						 'color': tuple(webcolors.name_to_rgb(color))})
 		
 		for bond in self.mol_d['bonds']:
 			R = self.style.BOND_RADIUS
 			verts, fcs = cylinder_tri(bond['coor_1'], bond['coor_2'], R=R, res=res_b)
+			color = self.style.BOND_COLOR
 			bond.update({'vertices': verts,
 						 'faces': fcs,
-						 'color': self.style.BOND_COLOR})
+						 'color': tuple(webcolors.name_to_rgb(color))})
 		
 		self.signature = "created by Mol2Mesh (c) 2024 github.com/iranovianti"
 	
@@ -114,7 +116,7 @@ class Mol2Mesh:
 			i,j,k = surf['faces'].T
 			fig.add_trace(go.Mesh3d(x=x, y=y, z=z,
 									i=i, j=j, k=k,
-									color=surf['color']))
+									color=f"rgb{surf['color']}"))
 		fig.update_scenes(aspectmode='data', xaxis_visible=False, yaxis_visible=False, zaxis_visible=False)
 		fig.show()
 	
@@ -196,7 +198,7 @@ class Mol2Mesh:
 
 		for surf in itertools.chain(self.mol_d['atoms'], self.mol_d['bonds']):
 			mesh = trimesh.Trimesh(vertices=surf['vertices'], faces=surf['faces'])
-			mesh.visual.face_colors = np.array((*webcolors.name_to_rgb(surf['color']), 255))
+			mesh.visual.face_colors = np.array((*surf['color'], 255))
 			meshes.append(mesh)
 		
 		combined = trimesh.util.concatenate(meshes)
