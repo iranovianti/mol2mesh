@@ -60,9 +60,9 @@ class Mol2Mesh:
 			element = atom['element'] if atom['element'] in self.style.atom_radius else 'others'
 			R = self.style.atom_radius[element]
 			verts, fcs = sphere_tri(R=R, res=res_a, origin=atom['coor'])
-			color = self.style.atom_color[element]
 
 			element = atom['element'] if atom['element'] in self.style.atom_color else 'others'
+			color = self.style.atom_color[element]
 			atom.update({'vertices': verts,
 						 'faces': fcs,
 						 'color': tuple(webcolors.name_to_rgb(color))})
