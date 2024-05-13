@@ -1,0 +1,10 @@
+#basic
+numpy
+scipy
+
+#visualization
+plotly
+webcolors
+
+#exporting 3D model with colors (.glb)
+trimesh
