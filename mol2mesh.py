@@ -69,14 +69,17 @@ class Mol2Mesh:
 						 'color': tuple(webcolors.name_to_rgb(color))})
 		
 		for bond in self.mol_d['bonds']:
+
 			R = self.style.BOND_RADIUS
+
 			if multicov and bond['bond_type'] in ['double', 'triple']:
+
 				if bond['bond_type']=='double':
-					_R = 0.48 * R
-					dist = 0.26 * R
+					_R = 0.47 * R
+					dist = 0.27 * R
 				elif bond['bond_type']=='triple':
 					_R = 0.3 * R
-					dist = 0.35 * R
+					dist =  R
 
 				bond_list = [[tuple(b['coor_1']), tuple(b['coor_2'])] for b in self.mol_d["bonds"]]
 				multi_bond = multiple_bond(bond['coor_1'], bond['coor_2'], bond_list, dist=dist, bond_type=bond['bond_type'])
@@ -231,9 +234,13 @@ class Mol2Mesh:
 		combined = trimesh.util.concatenate(meshes)
 		combined.export(filename)
 
-#---Helper functions---
+#---Helper functions for creating multiple covalent bonds---
 
 def get_reference_atom(A, B, bond_list):
+	"""
+	get a reference atom to form a plane for double bond (sp2 hybridization)
+	by finding a neighboring atom with the most covalent bonds
+	"""
 	#sort atoms based on the number of covalent bonds
 	bonds_flat = list(itertools.chain.from_iterable(bond_list))
 	atms_sorted = sorted(set(bonds_flat), key = lambda atm: bonds_flat.count(atm))[::-1]
@@ -249,30 +256,42 @@ def get_reference_atom(A, B, bond_list):
 	C = None
 
 	for atm in atms_sorted:
-		if C is None:
-			if atm in A_bonds + B_bonds:
-				C = atm
-				break
-	
+		if atm in A_bonds + B_bonds:
+			C = atm
+			break
 	return C
 
 def multiple_bond(A, B, bond_list, dist=0.1, bond_type='double'):
-	C = get_reference_atom(A, B, bond_list)
+	"""
+	turn bond coordinates into multiple coordinates of sub bonds
+	"""
+	if bond_type=='double':
+		#form sp2 plane
+		C = get_reference_atom(A, B, bond_list)
 	
-	pA = Point3D(A)
-	pB = Point3D(B)
-	pC = Point3D(C)
+		pA = Point3D(A)
+		pB = Point3D(B)
+		pC = Point3D(C)
 
-	plane = Plane(pA, pB, pC) #the plane of target bond
+		plane = Plane(pA, pB, pC) #the plane of target bond
 
-	normal = Line3D(pA, pB)
-	plane2 = Plane(pA, normal_vector=normal.direction) #a plane perpendicular to target bond
+		#get a plane perpendicular to sp2 plane
+		normal = Line3D(pA, pB)
+		plane2 = Plane(pA, normal_vector=normal.direction)
 	
-	#get direction to multiply target bond
-	intersection = plane.intersection(plane2)[0]
-	dir_vec = np.array([float(intersection.direction.x),
-						float(intersection.direction.y),
-						float(intersection.direction.z)])
+		#get direction to multiply target bond
+		direction = plane.intersection(plane2)[0].direction
+	
+	elif bond_type=='triple':
+		#get random point perpendicular to the bond
+		pts = dir_disk(A, B, R=1., res=10)
+		C = [pts[0][i] + A[i] for i in [0, 1, 2]]
+		#get direction to multiply target bond
+		direction = Line3D(A, C).direction
+		
+	dir_vec = np.array([float(direction.x),
+						float(direction.y),
+						float(direction.z)])
 	
 	A1 = A + dir_vec * dist
 	B1 = B + dir_vec * dist
