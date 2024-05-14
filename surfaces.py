@@ -34,6 +34,26 @@ def sphere_tri(R=1., res=10, origin=[0, 0, 0]):
 
 
 def cylinder_tri(p0, p1, R=1., res=10):
+	disk = dir_disk(p0, p1, R, res)
+	disk0 = np.array([p0[i] + disk[i] for i in [0, 1, 2]]) #disk translated to the top base
+	disk1 = np.array([p1[i] + disk[i] for i in [0, 1, 2]]) #disk translated to the bottom base
+
+	#combine all vertices
+	points = np.concatenate([[p0], disk0.T, [p1], disk1.T])
+
+	tri0 = [[0, i, i+1] for i in range(1,res)] #triangles for top base
+	tri1 = np.array(tri0) + res + 1 #triangles for bottom base
+	tri2 = [] #triangles for the side
+	for i in range(1, res):
+		j = i + res + 1
+		tri2.extend([[i, j, i+1], [i+1, j, j+1]])
+
+	#combine all triangles
+	triangles = np.concatenate([tri0, tri1, tri2])
+
+	return points, triangles
+
+def dir_disk(p0, p1, R, res):
 	p0 = np.array(p0)
 	p1 = np.array(p1)
 
@@ -51,24 +71,8 @@ def cylinder_tri(p0, p1, R=1., res=10):
 
 	theta = np.linspace(0, 2*np.pi, res)
 
-	disk = [R * np.sin(theta) * n1[i] + R * np.cos(theta) * n2[i] for i in [0, 1, 2]] #normal disk
-	disk0 = np.array([p0[i] + disk[i] for i in [0, 1, 2]]) #disk translated to the top base
-	disk1 = np.array([p1[i] + disk[i] for i in [0, 1, 2]]) #disk translated to the bottom base
-
-	#combine all vertices
-	points = np.concatenate([[p0], disk0.T, [p1], disk1.T])
-
-	tri0 = [[0, i, i+1] for i in range(1,theta.shape[0])] #triangles for top base
-	tri1 = np.array(tri0) + theta.shape[0] + 1 #triangles for bottom base
-	tri2 = [] #triangles for the side
-	for i in range(1, theta.shape[0]):
-		j = i + theta.shape[0] + 1
-		tri2.extend([[i, j, i+1], [i+1, j, j+1]])
-
-	#combine all triangles
-	triangles = np.concatenate([tri0, tri1, tri2])
-
-	return points, triangles
+	disk = [R * np.sin(theta) * n1[i] + R * np.cos(theta) * n2[i] for i in [0, 1, 2]]
+	return disk
 
 def find_normal(p1, p2, p3):
 	v1 = p2 - p1
