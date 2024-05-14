@@ -9,13 +9,14 @@ import itertools
 import numpy as np
 import webcolors
 import plotly.graph_objects as go
+from sympy import Plane, Point3D, Line3D
 
 from file_parser import *
 from style import *
 from surfaces import *
 
 class Mol2Mesh:
-	def __init__(self, file_path:str, style='BallStick', res_a:int=25, res_b:int=15, name:str=None):
+	def __init__(self, file_path:str, style='BallStick', multicov=False, res_a:int=25, res_b:int=15, name:str=None):
 		"""
 		A Mol2Mesh object contains triangular meshes of spheres (atoms) and cylinders (bonds)
 
@@ -69,7 +70,33 @@ class Mol2Mesh:
 		
 		for bond in self.mol_d['bonds']:
 			R = self.style.BOND_RADIUS
-			verts, fcs = cylinder_tri(bond['coor_1'], bond['coor_2'], R=R, res=res_b)
+			if multicov and bond['bond_type'] in ['double', 'triple']:
+				if bond['bond_type']=='double':
+					_R = 0.48 * R
+					dist = 0.26 * R
+				elif bond['bond_type']=='triple':
+					_R = 0.3 * R
+					dist = 0.35 * R
+
+				bond_list = [[tuple(b['coor_1']), tuple(b['coor_2'])] for b in self.mol_d["bonds"]]
+				multi_bond = multiple_bond(bond['coor_1'], bond['coor_2'], bond_list, dist=dist, bond_type=bond['bond_type'])
+
+				verts = []
+				fcs = []
+
+				for sub_bond in multi_bond:
+					sub_verts, sub_fcs = cylinder_tri(*sub_bond, R=_R, res=res_b)
+
+					init_idx = len(verts)
+					verts.extend(sub_verts)
+					fcs.extend(sub_fcs+init_idx)
+				
+				verts = np.array(verts)
+				fcs = np.array(fcs)
+
+			else:
+				verts, fcs = cylinder_tri(bond['coor_1'], bond['coor_2'], R=R, res=res_b)
+			
 			color = self.style.BOND_COLOR
 			bond.update({'vertices': verts,
 						 'faces': fcs,
@@ -203,3 +230,58 @@ class Mol2Mesh:
 		
 		combined = trimesh.util.concatenate(meshes)
 		combined.export(filename)
+
+#---Helper functions---
+
+def get_reference_atom(A, B, bond_list):
+	#sort atoms based on the number of covalent bonds
+	bonds_flat = list(itertools.chain.from_iterable(bond_list))
+	atms_sorted = sorted(set(bonds_flat), key = lambda atm: bonds_flat.count(atm))[::-1]
+
+	A = tuple(A)
+	B = tuple(B)
+
+	#atoms bonded to atom A and B
+	A_bonds = [a for b in bond_list if A in b and B not in b for a in b if a!=A]
+	B_bonds = [a for b in bond_list if B in b and A not in b for a in b if a!=B]
+
+	#get reference atom: an atom bonded to either A or B with the most covalent bonds
+	C = None
+
+	for atm in atms_sorted:
+		if C is None:
+			if atm in A_bonds + B_bonds:
+				C = atm
+				break
+	
+	return C
+
+def multiple_bond(A, B, bond_list, dist=0.1, bond_type='double'):
+	C = get_reference_atom(A, B, bond_list)
+	
+	pA = Point3D(A)
+	pB = Point3D(B)
+	pC = Point3D(C)
+
+	plane = Plane(pA, pB, pC) #the plane of target bond
+
+	normal = Line3D(pA, pB)
+	plane2 = Plane(pA, normal_vector=normal.direction) #a plane perpendicular to target bond
+	
+	#get direction to multiply target bond
+	intersection = plane.intersection(plane2)[0]
+	dir_vec = np.array([float(intersection.direction.x),
+						float(intersection.direction.y),
+						float(intersection.direction.z)])
+	
+	A1 = A + dir_vec * dist
+	B1 = B + dir_vec * dist
+
+	A2 = A - dir_vec * dist
+	B2 = B - dir_vec * dist
+
+	if bond_type == 'double':
+		return (A1, B1), (A2, B2)
+    
+	elif bond_type == 'triple':
+		return (A, B), (A1, B1), (A2, B2)

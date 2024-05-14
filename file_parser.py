@@ -4,6 +4,7 @@ Parser functions for chemical table files
 
 Written by Ira Novianti
 """
+bond_types = {1.0: 'single', 2.0: 'double', 3.0: 'triple'}
 
 def open_gjf(filename):
 	text = open(filename, "r").read()
@@ -69,10 +70,13 @@ def open_mol(filename):
 		atom1_idx = int(data[0]) - 1
 		atom2_idx = int(data[1]) - 1
 
+		bond_type = bond_types[float(data[2])]
+
 		coor_1 = atoms[atom1_idx]['coor']
 		coor_2 = atoms[atom2_idx]['coor']
 
 		bonds.append({'coor_1': coor_1,
-					  'coor_2': coor_2})
+					  'coor_2': coor_2,
+					  'bond_type': bond_type})
 
 	return {'atoms': atoms, 'bonds': bonds}
