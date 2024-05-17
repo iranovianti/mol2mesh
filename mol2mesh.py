@@ -266,6 +266,13 @@ def multiple_bond(A, B, bond_list, dist=0.1, bond_type='double'):
 	turn bond coordinates into multiple coordinates of sub bonds
 	"""
 	if bond_type=='double':
+		"""
+		Create a perpendicular plane (`plane2`) by using the original bond as the normal,
+		and make the plane intersection be the direction in which the coordinates are moved
+		to make sub bonds.
+
+		-contributed by https://github.com/mziele1
+		"""
 		#form sp2 plane
 		C = get_reference_atom(A, B, bond_list)
 	
