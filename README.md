@@ -1,34 +1,26 @@
-<img src="https://raw.githubusercontent.com/iranovianti/mol2mesh/main/figures/logo2.png" width="400">
+<img src="https://raw.githubusercontent.com/iranovianti/mol2mesh/main/figures/logo2.png" width="213" height="162">
 
 -----------
 
 # About
 **Mol2Mesh** generates a [3D model](#3d-models) of any molecule from its [chemical table file](#chemical-table-files)
-### Workflow
-  (1) Extract atomic and bond coordinates from a chemical table file.
-  
-  (2) Create a triangulated sphere for each atom and a triangulated cylinder for each bond.
-  
-  (3) Combine the spheres and cylinders to generate the final 3D mesh of the molecule.
 
-<img src="https://raw.githubusercontent.com/iranovianti/mol2mesh/main/figures/workflow.jpg" height="500">
-
-### Input
+### Input (Chemical table file)
 Example: [Dopamine.sdf](https://github.com/iranovianti/mol2mesh/blob/main/sample_files/Dopamine.sdf)
 ```
 681
-  -OEChem-05022422482D
+  -OEChem-05142402263D
 
  22 22  0     0  0  0  0  0  0999 V2000
-    4.2690    2.4050    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
-    2.5369    1.4050    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
-    6.8671   -2.0950    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
-    6.0010   -0.5950    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    5.1350   -0.0950    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    6.0010   -1.5950    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -2.2392    1.9626    0.0548 O   0  0  0  0  0  0  0  0  0  0  0  0
+   -3.3557   -0.5612    0.3868 O   0  0  0  0  0  0  0  0  0  0  0  0
+    4.4081    0.2624    0.3445 N   0  0  0  0  0  0  0  0  0  0  0  0
+    2.1628   -0.0212   -0.6613 C   0  0  0  0  0  0  0  0  0  0  0  0
+    0.7040   -0.1603   -0.3850 C   0  0  0  0  0  0  0  0  0  0  0  0
+    2.9862    0.1008    0.6289 C   0  0  0  0  0  0  0  0  0  0  0  0
 ```
 
-### Output
+### Output (3D model)
   <img src="https://github.com/iranovianti/mol2mesh/blob/main/figures/Dopamine_stl_3Dviewer.gif" width="400" height="400"> <img src="https://github.com/iranovianti/mol2mesh/blob/main/figures/Dopamine_glb_3Dviewer.gif" width="400" height="400">
 
   3D models of dopamine `.stl` (left) and `.glb` (right) viewed in 3D viewer
@@ -51,17 +43,21 @@ molecule.save_mesh('Dopamine.stl')
 
 ### Parameters
 ``` python
-Mol2Mesh(file_path, style='BallStick', res_a=25, res_b=15, name=None)
+Mol2Mesh(file_path, style='BallStick', res_a=25, res_b=15, multicov=False, name=None)
 ```
 * `file_path`: Path to the chemical table file (sdf, mol, or gjf).
 * `style`: Style configuration defining the radii and colors of atoms and bonds. It can be a [configuration class](https://github.com/iranovianti/mol2mesh/blob/main/style.py) or a string from the defined styles ['BallStick', 'Sticks', 'SpaceFilling'].
 
-  <img src="https://raw.githubusercontent.com/iranovianti/mol2mesh/main/figures/styles.png" height="200">
+  <img src="https://raw.githubusercontent.com/iranovianti/mol2mesh/main/figures/styles.png" height="200" width="675">
 
 * `res_a` and `res_b`: Resolution of an atom sphere and bond cylinder, i.e., the number of points defining each circle forming the sphere or cylinder. Increase the value for a smoother surface and decrease for a smaller file size.
 
-  <img src="https://raw.githubusercontent.com/iranovianti/mol2mesh/main/figures/res_a.jpg" height="300">
+  <img src="https://raw.githubusercontent.com/iranovianti/mol2mesh/main/figures/res_a.jpg" height="300" width="657">
 
+* `multicov`: Visibility of multiple covalent bonds
+  
+  <img src="https://raw.githubusercontent.com/iranovianti/mol2mesh/main/figures/multicov.jpg" height="218" width="369">
+  
 * `name`: The name of the molecule to be stored in the resulting 3D model `.stl` file.
 
 ### Methods
@@ -76,10 +72,10 @@ Mol2Mesh(file_path, style='BallStick', res_a=25, res_b=15, name=None)
 ### Getting chemical table files for known compounds
 * [PubChem](https://pubchem.ncbi.nlm.nih.gov/): Most known small-molecule compounds are registered in PubChem. To get the sdf file, search for the molecule by name, and on its molecule page, go to `3D conformer` section to download the sdf file.
 
-  <img src="https://raw.githubusercontent.com/iranovianti/mol2mesh/main/figures/get_sdf_pubchem.jpg" height="250">
+  <img src="https://raw.githubusercontent.com/iranovianti/mol2mesh/main/figures/get_sdf_pubchem.jpg" height="250" width="292">
 * Wikipedia: If you don't know the exact name of the molecule, you can google the molecule and check whether it has a wikipedia page.  In the identifier section (usually located beneath the molecule's structure on the right side of the page), you'll find the PubChem CID, which will redirect you to the molecule's page on PubChem.
   
-  <img src="https://raw.githubusercontent.com/iranovianti/mol2mesh/main/figures/get_sdf_wikipedia.jpg" height="300">
+  <img src="https://raw.githubusercontent.com/iranovianti/mol2mesh/main/figures/get_sdf_wikipedia.jpg" height="300" width="200">
 
 ### Creating chemical table files
 For custom molecules, you can use any 3D molecular visualization software. The most simple and acessible one is [MolView](https://molview.org) which allows you to download the `.mol` file of the molecule, however it doesn't offer energy minimization, so the 3D conformer for unknown compounds might look strange. Alternatively, you can use well-known software such as Avogadro, Chem3D, MarvinView, etc., and save the molecule as `.mol`, `.sdf`, or `.gjf`.
