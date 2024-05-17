@@ -54,7 +54,7 @@ Mol2Mesh(file_path, style='BallStick', res_a=25, res_b=15, multicov=False, name=
 
   <img src="https://raw.githubusercontent.com/iranovianti/mol2mesh/main/figures/res_a.jpg" height="300" width="657">
 
-* `multicov`: Visibility of multiple covalent bonds
+* `multicov`: Visibility of multiple covalent bonds [*](#acknowledgement)
   
   <img src="https://raw.githubusercontent.com/iranovianti/mol2mesh/main/figures/multicov.jpg" height="218" width="369">
   
@@ -89,3 +89,7 @@ For custom molecules, you can use any 3D molecular visualization software. The m
 The resulting file can be used for educative or personal purposes, such as making a real 3D model by 3D printing or just for molecule visualization. Additionally, both `.stl` and `.glb` files can be imported into PowerPoint slides.
   
   <img src="https://raw.githubusercontent.com/iranovianti/mol2mesh/main/figures/Dopamine_powerpoint.gif">
+
+-----------
+### Acknowledgement
+The approach for `multicov` is a contribution from [@mziele1](https://github.com/mziele1)
