@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mol2mesh"
+version = "0.1.1"
+description = "Convert molecular structures into 3D meshes"
+readme = "README.md"
+authors = [{ name = "Ira Novianti" }]
+license = { file = "LICENSE" }
+dependencies = [
+    "numpy",
+    "scipy",
+    "simpy",
+    "plotly",
+    "webcolors",
+    "trimesh"
+]
+
+[project.urls]
+Repository = "https://github.com/iranovianti/mol2mesh"
+
+[project.scripts]
+mol2mesh = "mol2mesh.mol2mesh:main"
+
+[tool.setuptools]
+packages = ["mol2mesh"]
