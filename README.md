@@ -26,6 +26,11 @@ Example: [Dopamine.sdf](https://github.com/iranovianti/mol2mesh/blob/main/sample
   3D models of dopamine `.stl` (left) and `.glb` (right) viewed in 3D viewer
 
 # Basic usage
+### Quick Start
+```bash
+# Installation
+pip install mol2mesh
+```
 <a href="https://colab.research.google.com/drive/1wXtnuMb0TBxx6yrmy46tHzWMkTw6Mk3w"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"></a>
 ``` python
 from mol2mesh import Mol2Mesh
