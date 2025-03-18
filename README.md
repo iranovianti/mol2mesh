@@ -21,7 +21,7 @@ Example: [Dopamine.sdf](https://github.com/iranovianti/mol2mesh/blob/main/sample
 ```
 
 ### Output (3D model)
-  <img src="https://github.com/iranovianti/mol2mesh/blob/main/figures/Dopamine_stl_3Dviewer.gif" width="400" height="400"> <img src="https://github.com/iranovianti/mol2mesh/blob/main/figures/Dopamine_glb_3Dviewer.gif" width="400" height="400">
+  <img src="https://raw.githubusercontent.com/iranovianti/mol2mesh/main/figures/Dopamine_stl_3Dviewer.gif" width="400" height="400"> <img src="https://raw.githubusercontent.com/iranovianti/mol2mesh/main/figures/Dopamine_glb_3Dviewer.gif" width="400" height="400">
 
   3D models of dopamine `.stl` (left) and `.glb` (right) viewed in 3D viewer
 
