@@ -11,9 +11,9 @@ import webcolors
 import plotly.graph_objects as go
 from sympy import Plane, Point3D, Line3D
 
-from file_parser import *
-from style import *
-from surfaces import *
+from .file_parser import *
+from .style import *
+from .surfaces import *
 
 class Mol2Mesh:
 	def __init__(self, file_path:str, style='BallStick', multicov=False, res_a:int=25, res_b:int=15, name:str=None):
@@ -72,7 +72,7 @@ class Mol2Mesh:
 
 			R = self.style.BOND_RADIUS
 
-			if multicov and bond['bond_type'] in ['double', 'triple']:
+			if multicov and bond.get('bond_type', None) in ['double', 'triple']:
 
 				if bond['bond_type']=='double':
 					_R = 0.47 * R
